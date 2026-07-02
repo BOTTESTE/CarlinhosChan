@@ -1,5 +1,5 @@
 --[[
-    Carlinhos Chan v12.0 – Compatível com Arceus Neo e JJsploit
+    Carlinhos Chan v12.1 – Mobile Ready (toque na bolinha)
     by DAN
 ]]
 
@@ -206,7 +206,7 @@ spawn(function()
     end
 end)
 
--- ========== INTERFACE ==========
+-- ========== INTERFACE (MOBILE OTIMIZADA) ==========
 local gui = Instance.new("ScreenGui")
 gui.Name = "CarlinhosChanGUI"
 gui.ResetOnSpawn = false
@@ -232,13 +232,13 @@ titleBar.Parent = main
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 12)
 
 local title = Instance.new("TextLabel")
-title.Text = "Carlinhos Chan v12"
+title.Text = "Carlinhos Chan v12.1"
 title.Size = UDim2.new(0.7, 0, 1, 0)
 title.Position = UDim2.new(0.05, 0, 0, 0)
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(255, 140, 0)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 20
+title.TextSize = 18
 title.Parent = titleBar
 
 local closeBtn = Instance.new("TextButton")
@@ -253,15 +253,15 @@ closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 17)
 
--- Botão flutuante
+-- Botão flutuante GRANDE para celular
 local ball = Instance.new("TextButton")
 ball.Text = "⚡"
-ball.Size = UDim2.new(0, 55, 0, 55)
-ball.Position = UDim2.new(0.02, 0, 0.5, -27)
+ball.Size = UDim2.new(0, 70, 0, 70)          -- maior, fácil de tocar
+ball.Position = UDim2.new(0.02, 0, 0.02, 0)  -- canto superior esquerdo
 ball.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
 ball.TextColor3 = Color3.new(1, 1, 1)
 ball.Font = Enum.Font.GothamBold
-ball.TextSize = 28
+ball.TextSize = 32
 ball.BorderSizePixel = 0
 ball.Visible = true
 ball.Parent = gui
@@ -337,12 +337,12 @@ local function addToggle(page, y, nome, padrao, callback)
 
     local lbl = Instance.new("TextLabel")
     lbl.Text = nome
-    lbl.Size = UDim2.new(0.7, 0, 1, 0)
+    lbl.Size = UDim2.new(0.65, 0, 1, 0)
     lbl.Position = UDim2.new(0.05, 0, 0, 0)
     lbl.BackgroundTransparency = 1
     lbl.TextColor3 = Color3.new(1, 1, 1)
     lbl.Font = Enum.Font.Gotham
-    lbl.TextSize = 14
+    lbl.TextSize = 13
     lbl.Parent = f
 
     local btn = Instance.new("TextButton")
@@ -581,50 +581,41 @@ pages["Config"] = configPage
 
 addToggle(configPage, 10, "Team Check", true, function(on) cfg.teamCheck = on end)
 
--- ========== CONTROLES DE MENU ==========
+-- ========== CONTROLES (apenas toque) ==========
 local function abrirMenu()
     main.Visible = true
     ball.Visible = false
-    uis.MouseBehavior = Enum.MouseBehavior.Default
 end
 
 local function fecharMenu()
     main.Visible = false
-    uis.MouseBehavior = Enum.MouseBehavior.LockCenter
     ball.Visible = true
 end
 
 closeBtn.MouseButton1Click:Connect(fecharMenu)
 ball.MouseButton1Click:Connect(abrirMenu)
 
+-- Arrastar (funciona com touch também)
 local dragging, startPos, startMouse
 titleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         dragging = true
         startPos = main.Position
         startMouse = input.Position
     end
 end)
 uis.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - startMouse
         main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 end)
 uis.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
-end)
-
-uis.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Tab or input.KeyCode == Enum.KeyCode.RightShift then
-        if main.Visible then
-            fecharMenu()
-        else
-            abrirMenu()
-        end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
     end
 end)
 
-uis.MouseBehavior = Enum.MouseBehavior.LockCenter
+-- Inicial: bola visível, menu escondido
 ball.Visible = true
+main.Visible = false
