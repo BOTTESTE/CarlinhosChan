@@ -1,30 +1,14 @@
-
 --[[
-    Carlinhos Chan v11.0 – Nova interface, Boneco R6, Foco em partes do corpo
+    Carlinhos Chan v12.0 – Compatível com Arceus Neo e JJsploit
     by DAN
-    Compatível com JJsploit
---]]
+]]
 
 local player = game.Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local uis = game:GetService("UserInputService")
 local vim = game:GetService("VirtualInputManager")
 
--- ========== CONFIGS ==========
-local cfg = {
-    aimbotHard = false,
-    aimbotSoft = false,
-    wallhack = false,
-    pullAll = false,
-    teamCheck = true,
-    errorRate = 20,
-    fovRadius = 30,
-    aimSmoothness = 0.15,
-    focusEnabled = false,      -- foco em parte específica
-    targetPart = "Head",       -- parte do corpo selecionada
-}
-
--- ========== PERSONAGEM ==========
+-- Aguarda personagem
 repeat wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Head")
 local char = player.Character
 local root = char.HumanoidRootPart
@@ -36,9 +20,22 @@ player.CharacterAdded:Connect(function(c)
     head = c:WaitForChild("Head")
 end)
 
+-- ========== CONFIGS ==========
+local cfg = {
+    aimbotHard = false,
+    aimbotSoft = false,
+    wallhack = false,
+    pullAll = false,
+    teamCheck = true,
+    errorRate = 20,
+    fovRadius = 30,
+    aimSmoothness = 0.15,
+    focusEnabled = false,
+    targetPart = "Head",
+}
+
 -- ========== UTILITÁRIOS ==========
 local function getBodyPart(character, partName)
-    -- Mapeia nomes comuns para as partes do corpo
     local map = {
         Head = "Head",
         Torso = "Torso",
@@ -89,7 +86,6 @@ local function getAlvos()
     return alvos
 end
 
--- Retorna o ponto de mira de acordo com a parte selecionada
 local function getAimPosition(alvo)
     if cfg.focusEnabled and cfg.targetPart then
         local part = getBodyPart(alvo.char, cfg.targetPart)
@@ -97,7 +93,7 @@ local function getAimPosition(alvo)
             return part.Position
         end
     end
-    return alvo.head.Position -- fallback para cabeça
+    return alvo.head.Position
 end
 
 -- ========== AIMBOT HARD ==========
@@ -143,6 +139,7 @@ spawn(function()
         end
     end
 end)
+
 -- ========== WALLHACK ==========
 local espName = "CarlinhosESP_" .. math.random(1000, 9999)
 spawn(function()
@@ -197,7 +194,6 @@ spawn(function()
             end
             for _, part in ipairs(todos) do part.Anchored = false end
 
-            -- Auto-fire mirando na parte selecionada
             local alvo = getAlvos()[1]
             if alvo then
                 local aimPos = getAimPosition(alvo)
@@ -210,17 +206,14 @@ spawn(function()
     end
 end)
 
--- ========== INTERFACE NOVA ==========
+-- ========== INTERFACE ==========
 local gui = Instance.new("ScreenGui")
 gui.Name = "CarlinhosChanGUI"
 gui.ResetOnSpawn = false
 gui.ZIndex = 100
 gui.Parent = player.PlayerGui
 
--- Fundo do cheat com imagem (placeholder)
-local bgImage = "rbxassetid://123456789" -- substitua pelo seu ID de imagem
-
--- Painel principal (retângulo)
+-- Painel principal
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 420, 0, 400)
 main.Position = UDim2.new(0.5, -210, 0.5, -200)
@@ -229,14 +222,6 @@ main.BorderSizePixel = 0
 main.Visible = false
 main.Parent = gui
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
-
--- Fundo com imagem (opcional)
-local fundo = Instance.new("ImageLabel")
-fundo.Image = bgImage
-fundo.Size = UDim2.new(1, 0, 1, 0)
-fundo.BackgroundTransparency = 1
-fundo.ScaleType = Enum.ScaleType.Crop
-fundo.Parent = main
 
 -- Barra de título
 local titleBar = Instance.new("Frame")
@@ -247,7 +232,7 @@ titleBar.Parent = main
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 12)
 
 local title = Instance.new("TextLabel")
-title.Text = "Carlinhos Chan v11"
+title.Text = "Carlinhos Chan v12"
 title.Size = UDim2.new(0.7, 0, 1, 0)
 title.Position = UDim2.new(0.05, 0, 0, 0)
 title.BackgroundTransparency = 1
@@ -256,9 +241,8 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.Parent = titleBar
 
--- Botão X (fechar)
 local closeBtn = Instance.new("TextButton")
-closeBtn.Text = "✕"
+closeBtn.Text = "X"
 closeBtn.Size = UDim2.new(0, 35, 0, 35)
 closeBtn.Position = UDim2.new(1, -40, 0.5, -17)
 closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
@@ -269,17 +253,21 @@ closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 17)
 
--- Botão flutuante ⚡ (com imagem personalizada se quiser)
-local ball = Instance.new("ImageButton")  -- ou TextButton se prefirir texto
+-- Botão flutuante
+local ball = Instance.new("TextButton")
+ball.Text = "⚡"
 ball.Size = UDim2.new(0, 55, 0, 55)
 ball.Position = UDim2.new(0.02, 0, 0.5, -27)
-ball.Image = bgImage -- mesma imagem, ou "rbxassetid://" da bolinha
-ball.BackgroundTransparency = 0.2
+ball.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+ball.TextColor3 = Color3.new(1, 1, 1)
+ball.Font = Enum.Font.GothamBold
+ball.TextSize = 28
+ball.BorderSizePixel = 0
 ball.Visible = true
 ball.Parent = gui
 Instance.new("UICorner", ball).CornerRadius = UDim.new(1, 0)
 
--- Menu lateral (direita) com ícones
+-- Menu lateral
 local sideBar = Instance.new("Frame")
 sideBar.Size = UDim2.new(0, 60, 1, -40)
 sideBar.Position = UDim2.new(1, -60, 0, 40)
@@ -295,7 +283,6 @@ content.BackgroundTransparency = 1
 content.BorderSizePixel = 0
 content.Parent = main
 
--- Navegação entre abas
 local currentTab = "Aimbot"
 local pages = {}
 
@@ -309,7 +296,7 @@ local function switchTab(tabName)
     end
 end
 
--- Função para criar ícones na barra lateral
+-- Ícones laterais
 local function createSideIcon(order, text, tabName)
     local btn = Instance.new("TextButton")
     btn.Text = text
@@ -325,7 +312,6 @@ local function createSideIcon(order, text, tabName)
 
     btn.MouseButton1Click:Connect(function()
         switchTab(tabName)
-        -- destaque visual
         for _, b in pairs(sideBar:GetChildren()) do
             if b:IsA("TextButton") then b.BackgroundColor3 = Color3.fromRGB(50, 50, 55) end
         end
@@ -334,24 +320,13 @@ local function createSideIcon(order, text, tabName)
     return btn
 end
 
--- Ícones do menu
-createSideIcon(1, "🎯", "Aimbot")   -- Aimbot
-createSideIcon(2, "👁", "Visual")   -- Wallhack
-createSideIcon(3, "🧍", "Alvo")     -- Boneco R6
-createSideIcon(4, "🧲", "Puxar")    -- Puxar todos
-createSideIcon(5, "⚙", "Config")   -- Configurações extras
+createSideIcon(1, "🎯", "Aimbot")
+createSideIcon(2, "👁", "Visual")
+createSideIcon(3, "🧍", "Alvo")
+createSideIcon(4, "🧲", "Puxar")
+createSideIcon(5, "⚙", "Config")
 
--- ========== PÁGINA AIMBOT ==========
-local aimPage = Instance.new("ScrollingFrame")
-aimPage.Size = UDim2.new(1, -10, 1, -10)
-aimPage.Position = UDim2.new(0, 5, 0, 5)
-aimPage.BackgroundTransparency = 1
-aimPage.ScrollBarThickness = 4
-aimPage.CanvasSize = UDim2.new(0, 0, 0, 300)
-aimPage.Parent = content
-pages["Aimbot"] = aimPage
-
--- Função para criar toggle em qualquer página
+-- Funções para criar elementos nas páginas
 local function addToggle(page, y, nome, padrao, callback)
     local f = Instance.new("Frame")
     f.Size = UDim2.new(1, -20, 0, 40)
@@ -436,7 +411,16 @@ local function addSlider(page, y, nome, min, max, default, callback)
     end)
 end
 
--- Preenche página Aimbot
+-- ========== PÁGINA AIMBOT ==========
+local aimPage = Instance.new("ScrollingFrame")
+aimPage.Size = UDim2.new(1, -10, 1, -10)
+aimPage.Position = UDim2.new(0, 5, 0, 5)
+aimPage.BackgroundTransparency = 1
+aimPage.ScrollBarThickness = 4
+aimPage.CanvasSize = UDim2.new(0, 0, 0, 300)
+aimPage.Parent = content
+pages["Aimbot"] = aimPage
+
 local aimHardTog = addToggle(aimPage, 10, "Aimbot Hard", false, function(on)
     cfg.aimbotHard = on
     if on then
@@ -454,7 +438,7 @@ end)
 addSlider(aimPage, 110, "Raio Soft (px)", 5, 200, cfg.fovRadius, function(val) cfg.fovRadius = val end)
 addSlider(aimPage, 170, "Taxa de Erro %", 0, 100, cfg.errorRate, function(val) cfg.errorRate = val end)
 
--- ========== PÁGINA VISUAL (Wallhack) ==========
+-- ========== PÁGINA VISUAL ==========
 local visPage = Instance.new("ScrollingFrame")
 visPage.Size = UDim2.new(1, -10, 1, -10)
 visPage.Position = UDim2.new(0, 5, 0, 5)
@@ -476,14 +460,12 @@ alvoPage.Visible = false
 alvoPage.Parent = content
 pages["Alvo"] = alvoPage
 
--- Boneco R6 2D (desenhado com frames)
 local doll = Instance.new("Frame")
 doll.Size = UDim2.new(0, 100, 0, 180)
 doll.Position = UDim2.new(0.5, -50, 0.1, 0)
 doll.BackgroundTransparency = 1
 doll.Parent = alvoPage
 
--- Partes do boneco
 local parts = {
     { name = "Head", color = Color3.fromRGB(255, 200, 150), sizeX = 40, sizeY = 40, posX = 30, posY = 0 },
     { name = "Torso", color = Color3.fromRGB(100, 150, 255), sizeX = 30, sizeY = 50, posX = 35, posY = 45 },
@@ -507,24 +489,20 @@ for _, partData in ipairs(parts) do
     Instance.new("UICorner", partBtn).CornerRadius = UDim.new(0, 8)
 
     partBtn.MouseButton1Click:Connect(function()
-        -- Reseta todas as cores
         for _, b in pairs(partButtons) do
-            b.BackgroundColor3 = b.Tag or Color3.fromRGB(200, 200, 200) -- restaura cor original
+            b.BackgroundColor3 = b.Tag or Color3.fromRGB(200, 200, 200)
         end
-        -- Destaca a selecionada em vermelho
         partBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
         selectedPart = partData.name
         cfg.targetPart = selectedPart
     end)
 
-    partBtn.Tag = partData.color -- guarda a cor original
+    partBtn.Tag = partData.color
     table.insert(partButtons, partBtn)
 end
 
--- Destaque inicial na cabeça
 partButtons[1].BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 
--- Controles de foco abaixo do boneco
 local focusFrame = Instance.new("Frame")
 focusFrame.Size = UDim2.new(1, -10, 0, 80)
 focusFrame.Position = UDim2.new(0, 5, 0, 230)
@@ -542,7 +520,6 @@ focusLabel.Font = Enum.Font.GothamBold
 focusLabel.TextSize = 14
 focusLabel.Parent = focusFrame
 
--- Botão "Ativar Foco" e toggle ON/OFF lado a lado
 local focusBtn = Instance.new("TextButton")
 focusBtn.Text = "Ativar Foco"
 focusBtn.Size = UDim2.new(0, 100, 0, 30)
@@ -620,7 +597,6 @@ end
 closeBtn.MouseButton1Click:Connect(fecharMenu)
 ball.MouseButton1Click:Connect(abrirMenu)
 
--- Arrastar
 local dragging, startPos, startMouse
 titleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -639,7 +615,6 @@ uis.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 end)
 
--- Atalhos TAB e RightShift
 uis.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.Tab or input.KeyCode == Enum.KeyCode.RightShift then
@@ -651,6 +626,5 @@ uis.InputBegan:Connect(function(input, gpe)
     end
 end)
 
--- Inicial
 uis.MouseBehavior = Enum.MouseBehavior.LockCenter
 ball.Visible = true
